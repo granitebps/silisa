@@ -49,6 +49,9 @@
                                     <a class="dropdown-item" href="{{route('kabupatenkota.index')}}">Master Kabupaten/Kota</a>
                                     <a class="dropdown-item" href="{{route('kecamatan.index')}}">Master Kecamatan</a>
                                     <a class="dropdown-item" href="{{route('desa.index')}}">Master Desa</a>
+                                    <a class="dropdown-item" href="{{route('wilayah.index')}}">Master Wilayah</a>
+                                    <a class="dropdown-item" href="{{route('area.index')}}">Master Area</a>
+                                    <a class="dropdown-item" href="{{route('rayon.index')}}">Master Rayon</a>
                                     <a class="dropdown-item" href="{{route('potensi.index')}}">Master Potensi Energi</a>
                                 </div>
                             </li>

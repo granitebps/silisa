@@ -18,6 +18,9 @@ use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Master\WilayahModel;
+use App\Models\Master\AreaModel;
+use App\Models\Master\RayonModel;
 
 require_once("convert.php");
 
@@ -40,7 +43,7 @@ class InfoDataDesaSheetImport implements ToCollection, WithHeadingRow, WithCalcu
             $kode_desa = str_replace(".", "", $row['KODE DESA (Permendagri 137 / 2017)']);
 
             // Table Master Provinsi
-            if (!is_null($row['PROVINSI (Permendagri 137 / 2017)']) && !is_null($row['KABUPATEN / KOTA (Permendagri 137 / 2017)']) && !is_null($row['KECAMATAN (Permendagri 137 / 2017)']) && !is_null($row['KODE DESA (Permendagri 137 / 2017)']) && !is_null($row['NAMA DESA / KELURAHAN (Permendagri 137 / 2017)'])) {
+            if (!is_null($row['PROVINSI (Permendagri 137 / 2017)']) && !is_null($row['KABUPATEN / KOTA (Permendagri 137 / 2017)']) && !is_null($row['KECAMATAN (Permendagri 137 / 2017)']) && !is_null($row['KODE DESA (Permendagri 137 / 2017)']) && !is_null($row['NAMA DESA / KELURAHAN (Permendagri 137 / 2017)'] && $row['Wilayah / Distribusi'] && $row['Area'] && $row['Rayon'])) {
                 $nama_provinsi_temp = preg_replace("/[^A-Za-z ]/", '', $row['PROVINSI (Permendagri 137 / 2017)']);
                 $nama_provinsi = strtoupper($nama_provinsi_temp);
                 $kode_provinsi = substr($kode_desa, 0, 2) . "00000000";
@@ -69,6 +72,27 @@ class InfoDataDesaSheetImport implements ToCollection, WithHeadingRow, WithCalcu
                     'KODE_KECAMATAN' => $kode_kecamatan
                 ]);
 
+                // Table Master Wilayah
+                // $nama_wilayah_temp = preg_replace('/[^A-Za-z ]/', '', $row['Wilayah / Distribusi']);
+                // $nama_wilayah = strtoupper($nama_wilayah_temp);
+                $wilayah = WilayahModel::firstOrCreate([
+                    'NAMA_WILAYAH' => $row['Wilayah / Distribusi']
+                ]);
+
+                // Table Master Area
+                // $nama_area_temp = preg_replace('/[^A-Za-z ]/', '', $row['Area']);
+                // $nama_area = strtoupper($nama_area_temp);
+                $area = AreaModel::firstOrCreate([
+                    'NAMA_AREA' => $row['Area']
+                ]);
+
+                // Table Master Rayon
+                // $nama_rayon_temp = preg_replace('/[^A-Za-z ]/', '', $row['Rayon']);
+                // $nama_rayon = strtoupper($nama_rayon_temp);
+                $rayon = RayonModel::firstOrCreate([
+                    'NAMA_RAYON' => $row['Rayon']
+                ]);
+
                 // Table Master Desa
                 try {
                     if (is_string($row['Lintang'])) {
@@ -90,11 +114,11 @@ class InfoDataDesaSheetImport implements ToCollection, WithHeadingRow, WithCalcu
                 $nama_desa = strtoupper($nama_desa_temp);
                 $desa = DesaModel::firstOrCreate([
                     'ID_KECAMATAN' => $kecamatan->ID_KECAMATAN,
+                    'ID_WILAYAH' => $wilayah->ID_WILAYAH,
+                    'ID_AREA' => $area->ID_AREA,
+                    'ID_RAYON' => $rayon->ID_RAYON,
                     'KODE_DESA' => $kode_desa,
                     'NAMA_DESA' => $nama_desa,
-                    'WILAYAH' => $row['Wilayah / Distribusi'],
-                    'AREA' => $row['Area'],
-                    'RAYON' => $row['Rayon'],
                     'LINTANG' => $row['Lintang'],
                     'BUJUR' => $row['Bujur']
                 ]);

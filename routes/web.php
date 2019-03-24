@@ -26,6 +26,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('kabupatenkota', 'Master\KabupatenKotaController');
     Route::resource('kecamatan', 'Master\KecamatanController');
     Route::resource('desa', 'Master\DesaController');
+    Route::resource('wilayah', 'Master\WilayahController');
+    Route::resource('area', 'Master\AreaController');
+    Route::resource('rayon', 'Master\RayonController');
     Route::resource('potensi', 'Master\PotensiController');
 
     // Dropdown

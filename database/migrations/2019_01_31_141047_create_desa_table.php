@@ -16,6 +16,9 @@ class CreateDesaTable extends Migration
         Schema::create('M_DESA', function (Blueprint $table) {
             $table->increments('ID_DESA');
             $table->integer('ID_KECAMATAN')->unsigned();
+            $table->integer('ID_WILAYAH')->unsigned();
+            $table->integer('ID_AREA')->unsigned();
+            $table->integer('ID_RAYON')->unsigned();
             $table->string('KODE_DESA', 45);
             $table->string('NAMA_DESA', 300);
             $table->string('WILAYAH', 200)->nullable();
@@ -30,6 +33,9 @@ class CreateDesaTable extends Migration
             $table->timestamps();
 
             $table->foreign('ID_KECAMATAN')->references('ID_KECAMATAN')->on('M_KECAMATAN');
+            $table->foreign('ID_WILAYAH')->references('ID_WILAYAH')->on('M_WILAYAH');
+            $table->foreign('ID_AREA')->references('ID_AREA')->on('M_AREA');
+            $table->foreign('ID_RAYON')->references('ID_RAYON')->on('M_RAYON');
         });
     }
 
