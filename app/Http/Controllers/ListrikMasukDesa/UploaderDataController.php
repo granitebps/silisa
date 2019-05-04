@@ -40,9 +40,9 @@ class UploaderDataController extends Controller
             'FILE_PATH' => 'public/excel/' . $file_name,
             'USER_CREATED' => $user
         ]);
-        $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
-        $cacheSettings = array(' memoryCacheSize ' => '8MB');
-        \PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
+        // $cacheMethod = \PHPExcel_CachedObjectStorageFactory::cache_to_phpTemp;
+        // $cacheSettings = array(' memoryCacheSize ' => '8MB');
+        // \PHPExcel_Settings::setCacheStorageMethod($cacheMethod, $cacheSettings);
         Excel::import(new SilisaImport, $file_name, 'excel');
         return redirect()->route('home');
     }

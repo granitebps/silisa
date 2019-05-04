@@ -43,7 +43,7 @@ class InfoDataDesaSheetImport implements ToCollection, WithHeadingRow, WithCalcu
             $kode_desa = str_replace(".", "", $row['KODE DESA (Permendagri 137 / 2017)']);
 
             // Table Master Provinsi
-            if (!is_null($row['PROVINSI (Permendagri 137 / 2017)']) && !is_null($row['KABUPATEN / KOTA (Permendagri 137 / 2017)']) && !is_null($row['KECAMATAN (Permendagri 137 / 2017)']) && !is_null($row['KODE DESA (Permendagri 137 / 2017)']) && !is_null($row['NAMA DESA / KELURAHAN (Permendagri 137 / 2017)'] && $row['Wilayah / Distribusi'] && $row['Area'] && $row['Rayon'])) {
+            if (!is_null($row['PROVINSI (Permendagri 137 / 2017)']) && !is_null($row['KABUPATEN / KOTA (Permendagri 137 / 2017)']) && !is_null($row['KECAMATAN (Permendagri 137 / 2017)']) && !is_null($row['KODE DESA (Permendagri 137 / 2017)']) && !is_null($row['NAMA DESA / KELURAHAN (Permendagri 137 / 2017)']) && !is_null($row['Wilayah / Distribusi']) && !is_null($row['Area']) && !is_null($row['Rayon'])) {
                 $nama_provinsi_temp = preg_replace("/[^A-Za-z ]/", '', $row['PROVINSI (Permendagri 137 / 2017)']);
                 $nama_provinsi = strtoupper($nama_provinsi_temp);
                 $kode_provinsi = substr($kode_desa, 0, 2) . "00000000";
@@ -122,148 +122,148 @@ class InfoDataDesaSheetImport implements ToCollection, WithHeadingRow, WithCalcu
                     'LINTANG' => $row['Lintang'],
                     'BUJUR' => $row['Bujur']
                 ]);
+
+                // Table Info Desa
+                if (!is_float($row['DESA BERLISTRIK PLN'])) {
+                    $row['DESA BERLISTRIK PLN'] = null;
+                }
+                if (!is_float($row['DESA BERLISTRIK LTSHE'])) {
+                    $row['DESA BERLISTRIK LTSHE'] = null;
+                }
+                if (!is_float($row['DESA BERLISTRIK NON PLN (Selain LTSHE)'])) {
+                    $row['DESA BERLISTRIK NON PLN (Selain LTSHE)'] = null;
+                }
+                if (!is_float($row['DESA BELUM BERLISTRIK'])) {
+                    $row['DESA BELUM BERLISTRIK'] = null;
+                }
+                if (!is_float($row['Jarak dari Jaringan Eksisting'])) {
+                    $row['Jarak dari Jaringan Eksisting'] = null;
+                }
+
+                try {
+                    $info_desa = InfoDesaModel::firstOrNew([
+                        'ID_DESA' => $desa->ID_DESA,
+                        'DESA_BERLISTRIK' => $row['DESA BERLISTRIK PLN'],
+                        'DESA_BERLISTRIK_LTSHE' => $row['DESA BERLISTRIK LTSHE'],
+                        'DESA_BERLISTRIK_NON_PLN' => $row['DESA BERLISTRIK NON PLN (Selain LTSHE)'],
+                        'DESA_BELUM_BERLISTRIK' => $row['DESA BELUM BERLISTRIK'],
+                        'JARAK_DARI_JARINGAN_EKSISTENSI' => $row['Jarak dari Jaringan Eksisting'],
+                        'KETERANGAN' => $row['Keterangan'],
+                        'TAHUN' => $tahun,
+                        'TRIWULAN' => $triwulan
+                    ]);
+                    if (!$info_desa->exists) {
+                        $get_info_desa = InfoDesaModel::where('ID_DESA', $info_desa->ID_DESA)->where('TAHUN', $info_desa->TAHUN)->where('TRIWULAN', $info_desa->TRIWULAN)->first();
+                        if (!is_null($get_info_desa)) {
+                            $get_info_desa->delete();
+                        }
+                        $info_desa->save();
+                    }
+                } catch (\Exception $e) {
+                    dd($i);
+                }
+
+                // Table Info Desa RT
+                if (!is_float($row['TOTAL RT DESA'])) {
+                    $row['TOTAL RT DESA'] = null;
+                }
+                if (!is_float($row['RT BERLISTRIK PLN'])) {
+                    $row['RT BERLISTRIK PLN'] = null;
+                }
+                if (!is_float($row['RT BERLISTRIK PLN (MENYALUR)'])) {
+                    $row['RT BERLISTRIK PLN (MENYALUR)'] = null;
+                }
+                if (!is_float($row['RT BERLISTRIK NON  PLN (LTSHE)'])) {
+                    $row['RT BERLISTRIK NON  PLN (LTSHE)'] = null;
+                }
+                if (!is_float($row['RT BERLISTRIK NON PLN SELAIN LTSHE'])) {
+                    $row['RT BERLISTRIK NON PLN SELAIN LTSHE'] = null;
+                }
+                if (!is_float($row['RT TIDAK BERLISTRIK'])) {
+                    $row['RT TIDAK BERLISTRIK'] = null;
+                }
+                if (!is_float($row['RT AKAN DILISTRIKI'])) {
+                    $row['RT AKAN DILISTRIKI'] = null;
+                }
+                if (!is_float($row['RT BELUM DAPAT DILISTRIKI'])) {
+                    $row['RT BELUM DAPAT DILISTRIKI'] = null;
+                }
+                if (!is_float($row['Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'])) {
+                    $row['Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'] = null;
+                }
+                if (!is_float($row['Update Status Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'])) {
+                    $row['Update Status Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'] = null;
+                }
+                try {
+                    $info_desa_rt = InfoDesaRTModel::firstOrNew([
+                        'ID_DESA' => $desa->ID_DESA,
+                        'TOTAL_RT' => $row['TOTAL RT DESA'],
+                        'RT_LISTRIK_PLN' => $row['RT BERLISTRIK PLN'],
+                        'RT_LISTRIK_PLN_MENYALUR' => $row['RT BERLISTRIK PLN (MENYALUR)'],
+                        'RT_LISTRIK_NON_PLN_LTSHE' => $row['RT BERLISTRIK NON  PLN (LTSHE)'],
+                        'RT_LISTRIK_NON_PLN' => $row['RT BERLISTRIK NON PLN SELAIN LTSHE'],
+                        'RT_TIDAK_BERLISTRIK' => $row['RT TIDAK BERLISTRIK'],
+                        'RT_AKAN_DILISTRIK' => $row['RT AKAN DILISTRIKI'],
+                        'RT_BELUM_DAPAT_DILISTRIK' => $row['RT BELUM DAPAT DILISTRIKI'],
+                        'JUMLAH_CALON_PENERIMA_SUBSIDI' => $row['Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'],
+                        'UPDATE_JMLH_CALON_PENERIMA_SUBSIDI' => $row['Update Status Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'],
+                        'TAHUN' => $tahun,
+                        'TRIWULAN' => $triwulan
+                    ]);
+                    if (!$info_desa_rt->exists) {
+                        $get_info_desa_rt = InfoDesaRTModel::where('ID_DESA', $info_desa_rt->ID_DESA)->where('TAHUN', $info_desa_rt->TAHUN)->where('TRIWULAN', $info_desa_rt->TRIWULAN)->first();
+                        if (!is_null($get_info_desa_rt)) {
+                            $get_info_desa_rt->delete();
+                        }
+                        $info_desa_rt->save();
+                    }
+                } catch (\Exception $e) {
+                    dd($i);
+                }
+
+                // Table Info Desa Pembangkit
+                if (!is_float($row['JAM NYALA PLN'])) {
+                    $row['JAM NYALA PLN'] = null;
+                } else {
+                    $row['JAM NYALA PLN'] = preg_replace("/[^0-9.]/", "", $row['JAM NYALA PLN']);
+                }
+                try {
+                    $info_desa_pembangkit = InfoDesaPembangkitModel::firstOrNew([
+                        'ID_DESA' => $desa->ID_DESA,
+                        'PLN_GRID_ISOLATED' => $row['PLN (GRID/ISOLATED)'],
+                        'JENIS_PEMBANGKIT_ISOLATED' => $row['JENIS PEMBANGKIT ISOLATED'],
+                        'JAM_NYALA_PLN' => $row['JAM NYALA PLN'],
+                        'GRID_KOMUNAL_STANDALONE' => $row['(Grid Komunal/ Stand Alone)'],
+                        'JENIS_PEMBANGKIT' => $row['Jenis Pembangkit'],
+                        'JAM_NYALA_NON_PLN' => $row['JAM NYALA NON PLN'],
+                        'STATUS_KONDISI_PASOKAN_LISTRIK' => $row['Status Kondisi Pasokan Listrik'],
+                        'KETERANGAN' => $row['KETERANGAN'],
+                        'TAHUN' => $tahun,
+                        'TRIWULAN' => $triwulan
+                    ]);
+                    if (!$info_desa_pembangkit->exists) {
+                        $get_info_desa_pembangkit = InfoDesaPembangkitModel::where('ID_DESA', $info_desa_pembangkit->ID_DESA)->where('TAHUN', $info_desa_pembangkit->TAHUN)->where('TRIWULAN', $info_desa_pembangkit->TRIWULAN)->first();
+                        if (!is_null($get_info_desa_pembangkit)) {
+                            $get_info_desa_pembangkit->delete();
+                        }
+                        $info_desa_pembangkit->save();
+                    }
+                } catch (\Exception $e) {
+                    dd($i);
+                }
+
+                // Table Master Potensi Energi
+                if (!is_null($row['Potensi Sumber Energi Setempat'])) {
+                    $potensi_energi = PotensiEnergiModel::firstOrCreate(['NAMA_POTENSI_ENERGI' => $row['Potensi Sumber Energi Setempat']]);
+                }
+
+                if (!is_null($row['Potensi Sumber Energi Setempat'])) {
+                    // Table Pivot Master Potensi Desa dan Info Desa
+                    $id_potensi_energi = PotensiEnergiModel::where('NAMA_POTENSI_ENERGI', ($row['Potensi Sumber Energi Setempat']))->first();
+                    $info_desa->potensi_energi()->attach($id_potensi_energi->ID_POTENSI_ENERGI);
+                }
             } else {
                 $errors[] = $i;
-            }
-
-            // Table Info Desa
-            if (!is_float($row['DESA BERLISTRIK PLN'])) {
-                $row['DESA BERLISTRIK PLN'] = null;
-            }
-            if (!is_float($row['DESA BERLISTRIK LTSHE'])) {
-                $row['DESA BERLISTRIK LTSHE'] = null;
-            }
-            if (!is_float($row['DESA BERLISTRIK NON PLN (Selain LTSHE)'])) {
-                $row['DESA BERLISTRIK NON PLN (Selain LTSHE)'] = null;
-            }
-            if (!is_float($row['DESA BELUM BERLISTRIK'])) {
-                $row['DESA BELUM BERLISTRIK'] = null;
-            }
-            if (!is_float($row['Jarak dari Jaringan Eksisting'])) {
-                $row['Jarak dari Jaringan Eksisting'] = null;
-            }
-
-            try {
-                $info_desa = InfoDesaModel::firstOrNew([
-                    'ID_DESA' => $desa->ID_DESA,
-                    'DESA_BERLISTRIK' => $row['DESA BERLISTRIK PLN'],
-                    'DESA_BERLISTRIK_LTSHE' => $row['DESA BERLISTRIK LTSHE'],
-                    'DESA_BERLISTRIK_NON_PLN' => $row['DESA BERLISTRIK NON PLN (Selain LTSHE)'],
-                    'DESA_BELUM_BERLISTRIK' => $row['DESA BELUM BERLISTRIK'],
-                    'JARAK_DARI_JARINGAN_EKSISTENSI' => $row['Jarak dari Jaringan Eksisting'],
-                    'KETERANGAN' => $row['Keterangan'],
-                    'TAHUN' => $tahun,
-                    'TRIWULAN' => $triwulan
-                ]);
-                if (!$info_desa->exists) {
-                    $get_info_desa = InfoDesaModel::where('ID_DESA', $info_desa->ID_DESA)->where('TAHUN', $info_desa->TAHUN)->where('TRIWULAN', $info_desa->TRIWULAN)->first();
-                    if (!is_null($get_info_desa)) {
-                        $get_info_desa->delete();
-                    }
-                    $info_desa->save();
-                }
-            } catch (\Exception $e) {
-                dd($i);
-            }
-
-            // Table Info Desa RT
-            if (!is_float($row['TOTAL RT DESA'])) {
-                $row['TOTAL RT DESA'] = null;
-            }
-            if (!is_float($row['RT BERLISTRIK PLN'])) {
-                $row['RT BERLISTRIK PLN'] = null;
-            }
-            if (!is_float($row['RT BERLISTRIK PLN (MENYALUR)'])) {
-                $row['RT BERLISTRIK PLN (MENYALUR)'] = null;
-            }
-            if (!is_float($row['RT BERLISTRIK NON  PLN (LTSHE)'])) {
-                $row['RT BERLISTRIK NON  PLN (LTSHE)'] = null;
-            }
-            if (!is_float($row['RT BERLISTRIK NON PLN SELAIN LTSHE'])) {
-                $row['RT BERLISTRIK NON PLN SELAIN LTSHE'] = null;
-            }
-            if (!is_float($row['RT TIDAK BERLISTRIK'])) {
-                $row['RT TIDAK BERLISTRIK'] = null;
-            }
-            if (!is_float($row['RT AKAN DILISTRIKI'])) {
-                $row['RT AKAN DILISTRIKI'] = null;
-            }
-            if (!is_float($row['RT BELUM DAPAT DILISTRIKI'])) {
-                $row['RT BELUM DAPAT DILISTRIKI'] = null;
-            }
-            if (!is_float($row['Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'])) {
-                $row['Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'] = null;
-            }
-            if (!is_float($row['Update Status Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'])) {
-                $row['Update Status Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'] = null;
-            }
-            try {
-                $info_desa_rt = InfoDesaRTModel::firstOrNew([
-                    'ID_DESA' => $desa->ID_DESA,
-                    'TOTAL_RT' => $row['TOTAL RT DESA'],
-                    'RT_LISTRIK_PLN' => $row['RT BERLISTRIK PLN'],
-                    'RT_LISTRIK_PLN_MENYALUR' => $row['RT BERLISTRIK PLN (MENYALUR)'],
-                    'RT_LISTRIK_NON_PLN_LTSHE' => $row['RT BERLISTRIK NON  PLN (LTSHE)'],
-                    'RT_LISTRIK_NON_PLN' => $row['RT BERLISTRIK NON PLN SELAIN LTSHE'],
-                    'RT_TIDAK_BERLISTRIK' => $row['RT TIDAK BERLISTRIK'],
-                    'RT_AKAN_DILISTRIK' => $row['RT AKAN DILISTRIKI'],
-                    'RT_BELUM_DAPAT_DILISTRIK' => $row['RT BELUM DAPAT DILISTRIKI'],
-                    'JUMLAH_CALON_PENERIMA_SUBSIDI' => $row['Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'],
-                    'UPDATE_JMLH_CALON_PENERIMA_SUBSIDI' => $row['Update Status Jumlah Rumah Tangga Calon Penerima Bantuan Subsidi Listrik'],
-                    'TAHUN' => $tahun,
-                    'TRIWULAN' => $triwulan
-                ]);
-                if (!$info_desa_rt->exists) {
-                    $get_info_desa_rt = InfoDesaRTModel::where('ID_DESA', $info_desa_rt->ID_DESA)->where('TAHUN', $info_desa_rt->TAHUN)->where('TRIWULAN', $info_desa_rt->TRIWULAN)->first();
-                    if (!is_null($get_info_desa_rt)) {
-                        $get_info_desa_rt->delete();
-                    }
-                    $info_desa_rt->save();
-                }
-            } catch (\Exception $e) {
-                dd($i);
-            }
-
-            // Table Info Desa Pembangkit
-            if (!is_float($row['JAM NYALA PLN'])) {
-                $row['JAM NYALA PLN'] = null;
-            } else {
-                $row['JAM NYALA PLN'] = preg_replace("/[^0-9.]/", "", $row['JAM NYALA PLN']);
-            }
-            try {
-                $info_desa_pembangkit = InfoDesaPembangkitModel::firstOrNew([
-                    'ID_DESA' => $desa->ID_DESA,
-                    'PLN_GRID_ISOLATED' => $row['PLN (GRID/ISOLATED)'],
-                    'JENIS_PEMBANGKIT_ISOLATED' => $row['JENIS PEMBANGKIT ISOLATED'],
-                    'JAM_NYALA_PLN' => $row['JAM NYALA PLN'],
-                    'GRID_KOMUNAL_STANDALONE' => $row['(Grid Komunal/ Stand Alone)'],
-                    'JENIS_PEMBANGKIT' => $row['Jenis Pembangkit'],
-                    'JAM_NYALA_NON_PLN' => $row['JAM NYALA NON PLN'],
-                    'STATUS_KONDISI_PASOKAN_LISTRIK' => $row['Status Kondisi Pasokan Listrik'],
-                    'KETERANGAN' => $row['KETERANGAN'],
-                    'TAHUN' => $tahun,
-                    'TRIWULAN' => $triwulan
-                ]);
-                if (!$info_desa_pembangkit->exists) {
-                    $get_info_desa_pembangkit = InfoDesaPembangkitModel::where('ID_DESA', $info_desa_pembangkit->ID_DESA)->where('TAHUN', $info_desa_pembangkit->TAHUN)->where('TRIWULAN', $info_desa_pembangkit->TRIWULAN)->first();
-                    if (!is_null($get_info_desa_pembangkit)) {
-                        $get_info_desa_pembangkit->delete();
-                    }
-                    $info_desa_pembangkit->save();
-                }
-            } catch (\Exception $e) {
-                dd($i);
-            }
-
-            // Table Master Potensi Energi
-            if (!is_null($row['Potensi Sumber Energi Setempat'])) {
-                $potensi_energi = PotensiEnergiModel::firstOrCreate(['NAMA_POTENSI_ENERGI' => $row['Potensi Sumber Energi Setempat']]);
-            }
-
-            if (!is_null($row['Potensi Sumber Energi Setempat'])) {
-                // Table Pivot Master Potensi Desa dan Info Desa
-                $id_potensi_energi = PotensiEnergiModel::where('NAMA_POTENSI_ENERGI', ($row['Potensi Sumber Energi Setempat']))->first();
-                $info_desa->potensi_energi()->attach($id_potensi_energi->ID_POTENSI_ENERGI);
             }
 
             $i++;
